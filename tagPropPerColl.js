@@ -9,7 +9,7 @@
             mongo --eval "var coll='image_CT';" tagPropPerColl.js > prop.txt
 
         For custom tag:
-            Edit script by adding tag name at lines 68, 71 and 73 instead of default "AngioFlag" 
+            mongo --eval "var tagArg='FlipAngle';" tagPropPerColl.js > prop.txt 
 
         For custom start and end years:
             mongo --eval "var minYear=2016; var maxYear=2017;" tagPropPerColl.js > prop.txt
@@ -17,8 +17,8 @@
     Log:
         2020-02-03 - BP - Create initial script with default on MR, tag AngioFlag
         2020-02-04 - BP - Add aggregate for tag value counts
-                        - Make use of custom tag names in queries (tested and not achieved)
                         - Is there a way to combine tagMatches and tagValues queries?
+        2020-02-05 - BP - Enable specification of terminal arguments for custom tag names
 */
 const DB_NAME = "dicom";
 const CONN = new Mongo();
@@ -57,6 +57,8 @@ function initDict() {
 function count() {
     var collection = (typeof coll === "undefined") ? "image_MR" : coll;
     var dbColl = db.getCollection(collection);
+    
+    var tag = (typeof tagArg === "undefined") ? "AngioFlag" : tagArg;
 
     for (var year in counts) {
         for (var month in counts[year]) {
@@ -65,12 +67,12 @@ function count() {
                 tagCount = 0;
 
                 totalMatches = dbColl.find({"header.DicomFilePath": {$regex: "^" + year + "/" + month + "/" + day}});
-                tagMatches = dbColl.find({"header.DicomFilePath": {$regex: "^" + year + "/" + month + "/" + day}, "AngioFlag": {"$exists": true}});
+                tagMatches = dbColl.find({"header.DicomFilePath": {$regex: "^" + year + "/" + month + "/" + day}, [tag]: {"$exists": true}});
                 tagValues = dbColl.aggregate([
                     { $match: { "header.DicomFilePath": {$regex: "^" + year + "/" + month + "/" + day}} },
-                    { $match: { "AngioFlag" : {"$exists": true}} },
+                    { $match: { [tag] : {"$exists": true}} },
                     { $group: {
-                            "_id": "$AngioFlag",
+                            "_id": [tag],
                             "count": {$sum: 1}
                         }
                     },
