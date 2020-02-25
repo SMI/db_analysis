@@ -39,7 +39,7 @@ function count() {
     echo "Daily count start: ${timestamp}" >> $LOG
     mongo --quiet --eval "var maxYear = 2018;" queries/countByDay.js > $1
 
-timestamp=`date "+%Y-%m-%d_%H:%M:%S"`
+    timestamp=`date "+%Y-%m-%d_%H:%M:%S"`
     echo "Daily count end: ${timestamp}" >> $LOGppopp
 }
 
@@ -49,7 +49,7 @@ function report() {
     python3 generate_report.py -s "/beegfs-hdruk/smi/data/counts/dicom_count.json" -m $3 -r $1
     python3 generate_detailed_report.py -s "/beegfs-hdruk/smi/data/counts/dicom_count.json" -m $3 -r $2
 
-timestamp=`date "+%Y-%m-%d_%H:%M:%S"`
+    timestamp=`date "+%Y-%m-%d_%H:%M:%S"`
     echo "Report end timestamp: ${timestamp}" >> $LOG
 }
 
@@ -58,8 +58,8 @@ function deduplicate() {
     echo "Deduplication start: ${timestamp}" >> $LOG
     mongo ../deduplication/deleteRepeatedByFilePath.js > ../deduplication/logs/${timestamp}.log
 
-timestamp=`date "+%Y-%m-%d_%H:%M:%S"`
-    echo "Report end timestamp: ${timestamp}" >> $LOG
+    timestamp=`date "+%Y-%m-%d_%H:%M:%S"`
+    echo "Deduplicsation finish: ${timestamp}" >> $LOG
 }
 
 count $bcounts && report $bgreport $bdreport $bcounts && deduplicate && count $acounts && report $agreport $adreport $acounts

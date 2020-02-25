@@ -20,9 +20,9 @@ from collections import OrderedDict
 NOW = datetime.now()
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--storage", "-s", help = "Path to the storage counts file", type = str)
-parser.add_argument("--mongo", "-m", help = "Path to the mongo counts file", type = str)
-parser.add_argument("--report", "-r", help = "Path to the report file", type = str)
+parser.add_argument("--storage", "-s", help = "Path to the storage counts file", type = str, required = True)
+parser.add_argument("--mongo", "-m", help = "Path to the mongo counts file", type = str, required = True)
+parser.add_argument("--report", "-r", help = "Path to the report file", type = str, required = False)
 
 def import_counts(path):
     '''Imports counts from .json files into a Python json object'''
